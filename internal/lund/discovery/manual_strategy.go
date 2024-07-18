@@ -10,7 +10,7 @@ type ManualDiscoveryStrategy struct {
 	servers []string
 }
 
-func NewManulDiscoveryStrategy(servers []string) *ManualDiscoveryStrategy {
+func NewManualDiscoveryStrategy(servers []string) *ManualDiscoveryStrategy {
 	return &ManualDiscoveryStrategy{
 		servers: servers,
 	}
