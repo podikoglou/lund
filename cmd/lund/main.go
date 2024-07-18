@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/podikoglou/lund/internal/lund"
+	"github.com/podikoglou/lund/internal/lund/discovery"
 	"github.com/urfave/cli/v2"
 	"github.com/valyala/fasthttp"
 )
@@ -136,6 +137,24 @@ func main() {
 func run(c *cli.Context) error {
 	// create global state
 	state := lund.State{}
+
+	// initialize discovery strategy
+	var strategy discovery.DiscoveryStrategy
+
+	switch c.String("discovery-strategy") {
+	case "docker":
+		log.Panic("The docker discovery strategy hasn't been implemented yet")
+		break
+
+	case "manual":
+		strategy = discovery.NewManualDiscoveryStrategy(c.StringSlice("discovery-servers"))
+		break
+	}
+
+	// perform initial discovery
+	log.Println("Performing Discovery...")
+	servers := strategy.Discover()
+	log.Println("Discovered", len(servers), "Servers")
 
 	// start performing health checks
 	go lund.HealthCheckLoop(&state, lund.HealthCheckOptions{
