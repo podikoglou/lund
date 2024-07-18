@@ -153,7 +153,10 @@ func run(c *cli.Context) error {
 
 	// perform initial discovery
 	log.Println("Performing Discovery...")
+
 	servers := strategy.Discover()
+	state.Servers = servers
+
 	log.Println("Discovered", len(servers), "Servers")
 
 	// start performing health checks
