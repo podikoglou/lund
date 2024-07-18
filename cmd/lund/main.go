@@ -125,9 +125,16 @@ func main() {
 
 func run(c *cli.Context) error {
 	// create global state
-	// state := lund.State{}
+	state := lund.State{}
 
 	// start performing health checks
+	go lund.HealthCheckLoop(&state, lund.HealthCheckOptions{
+		Interval:         c.Duration("health-check-interval"),
+		WriteTimeout:     c.Duration("health-check-write-timeout"),
+		ReadTimeout:      c.Duration("health-check-read-timeout"),
+		DNSCacheDuration: c.Duration("health-check-dns-cache-duration"),
+		Concurrency:      c.Int("health-check-concurrency"),
+	})
 
 	// create server
 	srv := fasthttp.Server{
