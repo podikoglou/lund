@@ -69,8 +69,11 @@ func HealthCheckLoop(state *State, opt HealthCheckOptions) {
 
 				log.Println("Performing Health Check on", server.URL)
 
+				// perform health check
 				health := CheckHealth(client, server.URL)
-				server.Alive = health // race conditions?
+
+				// update server state
+				server.Alive.Store(health)
 			}()
 		}
 	}
