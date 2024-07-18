@@ -70,10 +70,16 @@ func HealthCheckLoop(state *State, opt HealthCheckOptions) {
 				log.Println("Performing Health Check on", server.URL)
 
 				// perform health check
-				health := CheckHealth(client, server.URL)
+				alive := CheckHealth(client, server.URL)
 
 				// update server state
-				server.Alive.Store(health)
+				server.Alive.Store(alive)
+
+				if alive {
+					log.Println(server.URL, "is up")
+				} else {
+					log.Println(server.URL, "is down")
+				}
 			}()
 		}
 	}
