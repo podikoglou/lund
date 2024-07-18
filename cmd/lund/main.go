@@ -75,14 +75,14 @@ func main() {
 
 			// discovery
 			&cli.StringFlag{
-				Name:     "discovery-mode",
+				Name:     "discovery-strategy",
 				Usage:    "Discovery Mode (possible values: docker, manual)",
 				Required: true,
 				Category: "Discovery:",
-				EnvVars:  []string{"DISCOVERY_MODE"},
+				EnvVars:  []string{"DISCOVERY_STRATEGY"},
 				Action: func(c *cli.Context, val string) error {
 					if val != "docker" && val != "manual" {
-						return errors.New("Invalid discovery-mode value (possible values: docker, manual)")
+						return errors.New("Invalid discovery-strategy value (possible values: docker, manual)")
 					}
 
 					if val == "manual" && !c.IsSet("discovery-servers") {
