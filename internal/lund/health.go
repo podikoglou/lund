@@ -1,6 +1,7 @@
 package lund
 
 import (
+	"log"
 	"sync"
 	"time"
 
@@ -20,7 +21,21 @@ type HealthCheckOptions struct {
 // Returns true if the server is up.
 // Returns false if the server is down.
 func CheckHealth(client *fasthttp.Client, url string) bool {
-	return true
+	// NOTE: should we reuse the request?
+	// not the response though
+	req := fasthttp.AcquireRequest()
+	resp := fasthttp.AcquireResponse()
+
+	// TODO: consider parsing the URI once and using setURI here
+	// instead of setRequestURi
+	req.SetRequestURI(url)
+
+	// TODO: make option for using GET instead of HEAD
+	req.Header.SetMethod(fasthttp.MethodHead)
+
+	err := client.Do(req, resp)
+
+	return err == nil
 }
 
 // This functions is typically ran in a goroutine and constantly sends
@@ -51,6 +66,8 @@ func HealthCheckLoop(state *State, opt HealthCheckOptions) {
 
 			go func() {
 				defer wg.Done()
+
+				log.Println("Performing Health Check on", server.URL)
 
 				health := CheckHealth(client, server.URL)
 				server.Alive = health // race conditions?
