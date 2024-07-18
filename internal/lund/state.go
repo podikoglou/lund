@@ -4,6 +4,7 @@ type State struct {
 	Servers []*Server
 }
 
+// NOTE: cache?
 func (s *State) GetAliveServers() []*Server {
 	var servers []*Server
 
