@@ -146,14 +146,15 @@ func main() {
 				},
 			},
 
-			&cli.StringFlag{
-				Name:     "discovery-docker-sock",
-				Usage:    "Docker Socket Path",
-				Value:    "/var/run/docker.sock",
+			&cli.DurationFlag{
+				Name:     "discovery-interval",
+				Usage:    "How often to run discovery",
+				Value:    time.Second * 5,
 				Category: "Discovery:",
-				EnvVars:  []string{"DISCOVERY_DOCKER_SOCK"},
+				EnvVars:  []string{"DISCOVERY_INTERVAL"},
 			},
 		},
+
 		Action: run,
 	}
 
@@ -172,7 +173,7 @@ func run(c *cli.Context) error {
 
 	switch c.String("discovery-strategy") {
 	case "docker":
-		log.Panic("The docker discovery strategy hasn't been implemented yet")
+		strategy = discovery.NewDockerDiscoveryStrategy()
 		break
 
 	case "manual":
@@ -180,28 +181,17 @@ func run(c *cli.Context) error {
 		break
 	}
 
-	// perform initial discovery
-	log.Println("Performing Discovery...")
-
-	servers := strategy.Discover()
-	state.Servers = servers
-
-	// load proxy options, and create HTTP clients for each server loaded
-	// (not sure if we should do this here)
-	proxyOpts := lund.ProxyOptions{
-		WriteTimeout:     c.Duration("proxy-write-timeout"),
-		ReadTimeout:      c.Duration("proxy-write-timeout"),
-		DNSCacheDuration: c.Duration("proxy-dns-cache-duration"),
-		Concurrency:      c.Int("proxy-concurrency"),
-	}
-
-	for _, server := range state.Servers {
-		client := lund.CreateHTTPClient(&proxyOpts)
-
-		server.Client = client
-	}
-
-	log.Println("Discovered", len(servers), "Servers")
+	// start discovery loop
+	go discovery.DiscoveryLoop(&state, discovery.DiscoveryOptions{
+		Interval: c.Duration("discovery-interval"),
+		ProxyOpts: &lund.ProxyOptions{
+			WriteTimeout:     c.Duration("proxy-write-timeout"),
+			ReadTimeout:      c.Duration("proxy-write-timeout"),
+			DNSCacheDuration: c.Duration("proxy-dns-cache-duration"),
+			Concurrency:      c.Int("proxy-concurrency"),
+		},
+		Strategy: strategy,
+	})
 
 	// start performing health checks
 	go lund.HealthCheckLoop(&state, lund.HealthCheckOptions{

@@ -12,6 +12,16 @@ type State struct {
 	Counter uint32
 }
 
+func (s *State) GetServersMap() map[string]*Server {
+	servers := make(map[string]*Server)
+
+	for _, server := range s.Servers {
+		servers[server.URL] = server
+	}
+
+	return servers
+}
+
 // NOTE: cache?
 func (s *State) GetAliveServers() []*Server {
 	var servers []*Server
