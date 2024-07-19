@@ -71,12 +71,12 @@ func (s DockerDiscoveryStrategy) Discover() []*lund.Server {
 		}
 
 		// try to hopefully figure out the host (it *might* not be this one)
-		host := container.NetworkSettings.Networks["lund"].IPAddress
+		host := container.NetworkSettings.Networks["lund_lund"].IPAddress
 
 		// craft URL
 		// TODO: add another label for a path prefix, or host to be used in the
 		// http header.
-		url := fmt.Sprintf("http://%s:%s", host, port)
+		url := fmt.Sprintf("http://%s:%d", host, port)
 
 		// add the server to the list
 		servers = append(servers, &lund.Server{
