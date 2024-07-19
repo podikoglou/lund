@@ -35,6 +35,9 @@ func CheckHealth(client *fasthttp.Client, url string) bool {
 
 	err := client.Do(req, resp)
 
+	fasthttp.ReleaseRequest(req)
+	fasthttp.ReleaseResponse(resp)
+
 	return err == nil
 }
 
