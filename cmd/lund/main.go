@@ -89,14 +89,14 @@ func main() {
 				EnvVars:  []string{"PROXY_CHECK_READ_TIMEOUT"},
 			},
 			&cli.DurationFlag{
-				Name:     "health-check-dns-cache-duration",
+				Name:     "proxy-dns-cache-duration",
 				Usage:    "How often to clear the DNS cache for the reverse proxy",
 				Value:    time.Millisecond * 300,
 				Category: "Reverse Proxy:",
 				EnvVars:  []string{"PROXY_DNS_CACHE_DURATION"},
 			},
 			&cli.IntFlag{
-				Name:     "health-check-concurrency",
+				Name:     "proxy-concurrency",
 				Usage:    "How many requests can run at the same time by the reverse proxy http client (for each server)",
 				Value:    4,
 				Category: "Reverse Proxy:",
