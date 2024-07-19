@@ -1,0 +1,29 @@
+services:
+  lund:
+    build:
+      context: .
+      dockerfile: Dockerfile.lund
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DISCOVERY_STRATEGY=docker
+    networks:
+      - lund
+
+  example_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.example_service
+    deploy:
+      replicas: 10
+    networks:
+      - lund
+    labels:
+      - "lund.enable=true"
+      - "lund.port=8080"
+
+networks:
+  lund:
+    driver: bridge
