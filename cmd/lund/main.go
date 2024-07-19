@@ -186,6 +186,21 @@ func run(c *cli.Context) error {
 	servers := strategy.Discover()
 	state.Servers = servers
 
+	// load proxy options, and create HTTP clients for each server loaded
+	// (not sure if we should do this here)
+	proxyOpts := lund.ProxyOptions{
+		WriteTimeout:     c.Duration("proxy-write-timeout"),
+		ReadTimeout:      c.Duration("proxy-write-timeout"),
+		DNSCacheDuration: c.Duration("proxy-dns-cache-duration"),
+		Concurrency:      c.Int("proxy-concurrency"),
+	}
+
+	for _, server := range state.Servers {
+		client := lund.CreateHTTPClient(&proxyOpts)
+
+		server.Client = client
+	}
+
 	log.Println("Discovered", len(servers), "Servers")
 
 	// start performing health checks
