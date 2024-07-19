@@ -48,7 +48,6 @@ func HealthCheckLoop(state *State, opt HealthCheckOptions) {
 		NoDefaultUserAgentHeader:      false,
 		DisableHeaderNamesNormalizing: true,
 		DisablePathNormalizing:        true,
-		// increase DNS cache time to an hour instead of default minute
 		Dial: (&fasthttp.TCPDialer{
 			Concurrency:      opt.Concurrency,
 			DNSCacheDuration: opt.DNSCacheDuration,
