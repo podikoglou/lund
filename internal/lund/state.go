@@ -1,7 +1,15 @@
 package lund
 
+import (
+	"errors"
+	"sync/atomic"
+)
+
 type State struct {
 	Servers []*Server
+
+	// TODO: Reset this periodically! this will definitely overflow at some point
+	Counter uint32
 }
 
 // NOTE: cache?
@@ -15,4 +23,19 @@ func (s *State) GetAliveServers() []*Server {
 	}
 
 	return servers
+}
+
+func (s *State) GetNextServer() (*Server, error) {
+	servers := s.GetAliveServers()
+
+	// if there's no alive servers, return an error
+	if len(servers) == 0 {
+		return nil, errors.New("There are no available servers at the moment")
+	}
+
+	counter := atomic.AddUint32(&s.Counter, 1)
+
+	idx := int(counter % uint32(len(servers)))
+
+	return servers[idx], nil
 }

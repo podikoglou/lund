@@ -170,7 +170,7 @@ func run(c *cli.Context) error {
 
 	// create server
 	srv := fasthttp.Server{
-		Handler: lund.MakeRequestHandler(""),
+		Handler: lund.MakeRequestHandler(&state),
 	}
 
 	// construct address to listen on
