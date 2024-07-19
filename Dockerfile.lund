@@ -1,3 +1,4 @@
+# build
 FROM golang:1.22.5-alpine AS builder
 
 WORKDIR /app
@@ -9,15 +10,10 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o lund ./cmd/lund
 
-FROM alpine:latest
-
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /root/
+# run
+FROM alpine:3.18
 
 COPY --from=builder /app/lund .
-COPY lund.toml .
 
 EXPOSE 8080
-
 CMD ["./lund"]
